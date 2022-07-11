@@ -1,5 +1,6 @@
 import { Container, makeStyles, Typography } from "@material-ui/core";
 import React from "react";
+import Carousel from "../Carousel/Carousel";
 
 const useStyles = makeStyles(() => ({
   banner: {
@@ -17,6 +18,13 @@ const useStyles = makeStyles(() => ({
   featTitle: {
     color: "gold",
   },
+  tagRow: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '40%',
+    justifyContent: 'center',
+    textAlign: 'center',
+  }
 }));
 
 const Banner = () => {
@@ -37,10 +45,12 @@ const Banner = () => {
             <span className={classes.featTitle}>K</span>rypto
             <span className={classes.featTitle}>W</span>atcher
           </Typography>
-          <Typography variant="subtitle2" style={{ color: '#aaa', textTransform: 'capitalize', fontFamily: "Montserrat-light" }}>
+          <Typography variant="subtitle1" style={{ color: '#ddd', textTransform: 'capitalize', fontFamily: "Montserrat-bold" }}>
             Fique por dentro do mercado de cripto através do KryptoWatcher.
           </Typography>
         </div>
+
+        <Carousel />
       </Container>
     </section>
   );
