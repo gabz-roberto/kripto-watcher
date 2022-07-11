@@ -19,11 +19,13 @@ import {
 } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
 import { addCommas } from "../Carousel/Carousel";
+import { Pagination } from "@material-ui/lab";
 
 const TableCoins = () => {
   const [coins, setCoins] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
   const { currency, symbol } = AppState();
@@ -36,6 +38,11 @@ const TableCoins = () => {
         backgroundColor: "#222",
       },
       fontFamily: "Montserrat-regular",
+    },
+    pagination: {
+      "& .MuiPaginationItem-root": {
+        color: "#ddd",
+      },
     },
   }));
 
@@ -50,6 +57,7 @@ const TableCoins = () => {
 
   useEffect(() => {
     fetchCoins();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currency]);
 
   const darkTheme = createTheme({
@@ -110,61 +118,80 @@ const TableCoins = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {handleSearch().map((row) => {
-                  let variation = row.price_change_percentage_24h > 0;
+                {handleSearch()
+                  .slice((page - 1) * 10, (page - 1) * 10 + 10)
+                  .map((row) => {
+                    let variation = row.price_change_percentage_24h > 0;
 
-                  return (
-                    <TableRow
-                      key={row.name}
-                      onClick={() => navigate(`/coin/${row.id}`)}
-                      className={classes.row}
-                    >
-                      <TableCell
-                        component={"th"}
-                        scope="row"
-                        style={{ display: "flex", gap: 15 }}
+                    return (
+                      <TableRow
+                        key={row.name}
+                        onClick={() => navigate(`/coin/${row.id}`)}
+                        className={classes.row}
                       >
-                        <img
-                          src={row?.image}
-                          alt={row?.name}
-                          height="40"
-                          style={{ margin: 10 }}
-                        />
-                        <div
-                          style={{ display: "flex", flexDirection: "column" }}
+                        <TableCell
+                          component={"th"}
+                          scope="row"
+                          style={{ display: "flex", gap: 15 }}
                         >
-                          <span
-                            style={{ textTransform: "uppercase", fontSize: 22 }}
+                          <img
+                            src={row?.image}
+                            alt={row?.name}
+                            height="40"
+                            style={{ margin: 10 }}
+                          />
+                          <div
+                            style={{ display: "flex", flexDirection: "column" }}
                           >
-                            {row?.symbol}
-                          </span>
-                          <span style={{ color: "#ddd" }}>{row?.name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell align="right">
-                        {symbol} {addCommas(row.current_price.toFixed(2))}
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        style={{
-                          fontWeight: 700,
-                          color: variation > 0 ? "#00E02A" : "#F01608",
-                        }}
-                      >
-                        {variation && "+"}
-                        {row.price_change_percentage_24h.toFixed(2)}%
-                      </TableCell>
-                      <TableCell align="right">
-                        {symbol}{" "}
-                        {addCommas(row.market_cap.toString().slice(0, -6))}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                            <span
+                              style={{
+                                textTransform: "uppercase",
+                                fontSize: 22,
+                              }}
+                            >
+                              {row?.symbol}
+                            </span>
+                            <span style={{ color: "#ddd" }}>{row?.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell align="right">
+                          {symbol} {addCommas(row.current_price.toFixed(2))}
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          style={{
+                            fontWeight: 700,
+                            color: variation > 0 ? "#00E02A" : "#F01608",
+                          }}
+                        >
+                          {variation && "+"}
+                          {row.price_change_percentage_24h.toFixed(2)}%
+                        </TableCell>
+                        <TableCell align="right">
+                          {symbol}{" "}
+                          {addCommas(row.market_cap.toString().slice(0, -6))}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           )}
         </TableContainer>
+        <Pagination
+          count={(handleSearch()?.length / 10).toFixed(0)}
+          classes={{ ul: classes.pagination }}
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            padding: 20,
+          }}
+          onChange={(_, value) => {
+            setPage(value);
+            window.scroll(0, 450);
+          }}
+        />
       </Container>
     </ThemeProvider>
   );
